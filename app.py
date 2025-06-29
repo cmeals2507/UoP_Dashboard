@@ -4,7 +4,7 @@ import altair as alt
 
 # ——— Page config ———
 st.set_page_config(
-    page_title="Music Performance Dashboard",
+    page_title="University of the Pacific Conservatory of Music Programming Database",
     layout="wide"
 )
 
