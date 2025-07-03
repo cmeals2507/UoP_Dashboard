@@ -167,16 +167,35 @@ if composer_select != "All" and col_composer_name:
 if performer_select != "All" and col_performer:
     filtered = filtered[filtered[col_performer] == performer_select]
 
-# Sort by Date, Concert #, then Index
-if col_date and col_concert and col_index:
+# ——— Sort by Academic Year, Semester (Fall, Spring), then Index ———
+if col_academic_year and col_semester and col_index:
     filtered = filtered.copy()
-    # attempt numeric conversion for correct ordering
+    # Convert Semester to ordered categorical for custom sort order
+    filtered[col_semester] = pd.Categorical(
+        filtered[col_semester],
+        categories=['Fall', 'Spring'],
+        ordered=True
+    )
+    # Convert Index to numeric for correct ordering
+    try:
+        filtered[col_index] = pd.to_numeric(filtered[col_index])
+    except:
+        pass
+    # Sort by Academic Year, Semester, then Index
+    filtered = filtered.sort_values(
+        by=[col_academic_year, col_semester, col_index]
+    )
+# Fallback: original date, concert, index sorting
+elif col_date and col_concert and col_index:
+    filtered = filtered.copy()
     try:
         filtered[col_concert] = pd.to_numeric(filtered[col_concert])
         filtered[col_index] = pd.to_numeric(filtered[col_index])
     except:
         pass
-    filtered = filtered.sort_values(by=[col_date, col_concert, col_index])
+    filtered = filtered.sort_values(
+        by=[col_date, col_concert, col_index]
+    )
 elif col_date:
     filtered = filtered.sort_values(by=[col_date])
 
