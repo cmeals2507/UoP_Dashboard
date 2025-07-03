@@ -39,7 +39,7 @@ st.markdown("---")
 
 @st.cache_data
 def load_data():
-    df = pd.read_excel("LongForm.xlsx", sheet_name="LongForm")
+    df = pd.read_csv("LongForm.csv")
     # Drop unwanted columns if present
     for col in ["Year", "Composer dates"]:
         if col in df.columns:
