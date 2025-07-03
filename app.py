@@ -415,16 +415,16 @@ if col_piece:         display_cols.append(col_piece);         rename_map[col_pie
 df_display = filtered[display_cols].rename(columns=rename_map)
 
 # Download filtered results
-import io
-towrite = io.BytesIO()
-df_display.to_excel(towrite, index=False, sheet_name='Data')
-towrite.seek(0)
-st.download_button(
-    label="Download data as Excel (.xlsx)",
-    data=towrite,
-    file_name="filtered_data.xlsx",
-    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-)
+# import io
+# towrite = io.BytesIO()
+# df_display.to_excel(towrite, index=False, sheet_name='Data')
+# towrite.seek(0)
+# st.download_button(
+#     label="Download data as Excel (.xlsx)",
+#     data=towrite,
+#     file_name="filtered_data.xlsx",
+#     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+# )
 
 # ——— Sidebar ICD Logo ———
 st.sidebar.markdown("<br><br><br>", unsafe_allow_html=True)
