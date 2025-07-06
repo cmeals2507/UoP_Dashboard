@@ -495,4 +495,6 @@ st.sidebar.image("powered by.png", use_container_width=True)
 
 # Display filtered results table
 st.write(f"Displaying {len(df_display)} records:")
-st.dataframe(df_display.style.hide_index(), use_container_width=True)
+# Render table without index using HTML
+html_table = df_display.to_html(index=False)
+st.markdown(html_table, unsafe_allow_html=True)
