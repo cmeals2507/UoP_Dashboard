@@ -170,12 +170,19 @@ performer_select = st.sidebar.selectbox("Performer", performer_opts)
 ay_list = filters.get('Academic Year', [])
 sem_list = filters.get('Semester', [])
 pt_list = filters.get('Performance Type', [])
+# Determine display values or N/A
+ay_val = ', '.join(ay_list) if ay_list else 'N/A'
+sem_val = ', '.join(sem_list) if sem_list else 'N/A'
+pt_val = ', '.join(pt_list) if pt_list else 'N/A'
+comp_val = composer_select if composer_select and composer_select != 'All' else 'N/A'
+perf_val = performer_select if performer_select and performer_select != 'All' else 'N/A'
+# Build HTML with light labels and darker values
 filter_summary = (
-    f"**Filters:** Academic Year: {', '.join(ay_list) if ay_list else 'All'} | "
-    f"Semester: {', '.join(sem_list) if sem_list else 'All'} | "
-    f"Performance Type: {', '.join(pt_list) if pt_list else 'All'} | "
-    f"Composer: {composer_select if composer_select and composer_select!='All' else 'All'} | "
-    f"Performer: {performer_select if performer_select and performer_select!='All' else 'All'}"
+    f"<span style='color:#888'>Academic Year:</span> <span style='color:#444'>{ay_val}</span> | "
+    f"<span style='color:#888'>Semester:</span> <span style='color:#444'>{sem_val}</span> | "
+    f"<span style='color:#888'>Performance Type:</span> <span style='color:#444'>{pt_val}</span> | "
+    f"<span style='color:#888'>Composer:</span> <span style='color:#444'>{comp_val}</span> | "
+    f"<span style='color:#888'>Performer:</span> <span style='color:#444'>{perf_val}</span>"
 )
 
 
@@ -286,7 +293,7 @@ dem_section_cols = st.columns([1, 1])
 with dem_section_cols[0]:
     st.subheader("Composer Demographics Distribution")
     st.caption("Metrics reflect the currently filtered results.")
-    st.markdown(filter_summary)
+    st.markdown(filter_summary, unsafe_allow_html=True)
 
     # Gender gauges
     g1, g2, g3 = st.columns(3)
@@ -315,7 +322,7 @@ with dem_section_cols[1]:
     # Prepare and render the stacked Demographic Groups chart (narrow, left-justified)
     st.subheader("Demographic Groups (by Vital Status)")
     st.caption("Chart reflects the currently filtered results.")
-    st.markdown(filter_summary)
+    st.markdown(filter_summary, unsafe_allow_html=True)
 
     records = []
     group_map = {'White Men': 1, 'White Women': 2, 'BBIA Men': 3, 'BBIA Women': 4}
@@ -357,7 +364,7 @@ st.caption("Distribution charts reflect the currently filtered data.")
 cols_dist = st.columns(2)
 with cols_dist[0]:
     st.subheader("Gender Distribution")
-    st.markdown(filter_summary)
+    st.markdown(filter_summary, unsafe_allow_html=True)
     gender_df = pd.DataFrame(list(gender_counts.items()), columns=["Gender","Count"])
     chart_gender = alt.Chart(gender_df).mark_bar().encode(
         x=alt.X("Count:Q", title="Count"),
@@ -367,7 +374,7 @@ with cols_dist[0]:
     st.altair_chart(chart_gender, use_container_width=True)
 with cols_dist[1]:
     st.subheader("Ethnicity Distribution")
-    st.markdown(filter_summary)
+    st.markdown(filter_summary, unsafe_allow_html=True)
     eth_df = pd.DataFrame(list(eth_counts.items()), columns=["Ethnicity","Count"])
     chart_eth = alt.Chart(eth_df).mark_bar().encode(
         x=alt.X("Count:Q", title="Count"),
@@ -437,7 +444,7 @@ else:
 
 # ——— Main UI ———
 st.header("Music Performance Dashboard")
-st.markdown(filter_summary)
+st.markdown(filter_summary, unsafe_allow_html=True)
 
 # Summary metrics
 col1, col2, col3 = st.columns(3)
