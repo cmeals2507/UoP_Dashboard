@@ -228,21 +228,19 @@ if performer_select != "All" and col_performer:
 # ——— Sort by Academic Year, Semester (Fall, Spring), then Index ———
 if col_academic_year and col_semester and col_index:
     filtered = filtered.copy()
-    # Convert Semester to ordered categorical for custom sort order
-    filtered[col_semester] = pd.Categorical(
-        filtered[col_semester],
-        categories=['Fall', 'Spring'],
-        ordered=True
-    )
+    # Extract season for sorting (Fall before Spring), preserve full semester labels
+    season = filtered[col_semester].str.extract(r'(Fall|Spring)', expand=False)
+    filtered['_sem_order'] = pd.Categorical(season, categories=['Fall','Spring'], ordered=True)
     # Convert Index to numeric for correct ordering
     try:
         filtered[col_index] = pd.to_numeric(filtered[col_index])
     except:
         pass
-    # Sort by Academic Year, Semester, then Index
+    # Sort by Academic Year, season order, then Index
     filtered = filtered.sort_values(
-        by=[col_academic_year, col_semester, col_index]
+        by=[col_academic_year, '_sem_order', col_index]
     )
+    filtered = filtered.drop(columns=['_sem_order'])
 # Fallback: original date, concert, index sorting
 elif col_date and col_concert and col_index:
     filtered = filtered.copy()
@@ -497,4 +495,4 @@ st.sidebar.image("powered by.png", use_container_width=True)
 
 # Display filtered results table
 st.write(f"Displaying {len(df_display)} records:")
-st.dataframe(df_display, use_container_width=True)
+st.dataframe(df_display.style.hide_index(), use_container_width=True)
