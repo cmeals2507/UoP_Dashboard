@@ -161,9 +161,22 @@ composer_opts = ["All"] + composer_opts
 composer_select = st.sidebar.selectbox("Composer", composer_opts)
 
 # Performer autocomplete dropdown
+
 performer_opts = sorted(df[col_performer].dropna().unique()) if col_performer else []
 performer_opts = ["All"] + performer_opts
 performer_select = st.sidebar.selectbox("Performer", performer_opts)
+
+# Build dynamic filter summary below titles
+ay_list = filters.get('Academic Year', [])
+sem_list = filters.get('Semester', [])
+pt_list = filters.get('Performance Type', [])
+filter_summary = (
+    f"**Filters:** Academic Year: {', '.join(ay_list) if ay_list else 'All'} | "
+    f"Semester: {', '.join(sem_list) if sem_list else 'All'} | "
+    f"Performance Type: {', '.join(pt_list) if pt_list else 'All'} | "
+    f"Composer: {composer_select if composer_select and composer_select!='All' else 'All'} | "
+    f"Performer: {performer_select if performer_select and performer_select!='All' else 'All'}"
+)
 
 
 # Apply filters: Academic Year OR Semester, AND Performance Type
@@ -273,6 +286,7 @@ dem_section_cols = st.columns([1, 1])
 with dem_section_cols[0]:
     st.subheader("Composer Demographics Distribution")
     st.caption("Metrics reflect the currently filtered results.")
+    st.markdown(filter_summary)
 
     # Gender gauges
     g1, g2, g3 = st.columns(3)
@@ -301,6 +315,7 @@ with dem_section_cols[1]:
     # Prepare and render the stacked Demographic Groups chart (narrow, left-justified)
     st.subheader("Demographic Groups (by Vital Status)")
     st.caption("Chart reflects the currently filtered results.")
+    st.markdown(filter_summary)
 
     records = []
     group_map = {'White Men': 1, 'White Women': 2, 'BBIA Men': 3, 'BBIA Women': 4}
@@ -342,6 +357,7 @@ st.caption("Distribution charts reflect the currently filtered data.")
 cols_dist = st.columns(2)
 with cols_dist[0]:
     st.subheader("Gender Distribution")
+    st.markdown(filter_summary)
     gender_df = pd.DataFrame(list(gender_counts.items()), columns=["Gender","Count"])
     chart_gender = alt.Chart(gender_df).mark_bar().encode(
         x=alt.X("Count:Q", title="Count"),
@@ -351,6 +367,7 @@ with cols_dist[0]:
     st.altair_chart(chart_gender, use_container_width=True)
 with cols_dist[1]:
     st.subheader("Ethnicity Distribution")
+    st.markdown(filter_summary)
     eth_df = pd.DataFrame(list(eth_counts.items()), columns=["Ethnicity","Count"])
     chart_eth = alt.Chart(eth_df).mark_bar().encode(
         x=alt.X("Count:Q", title="Count"),
@@ -368,6 +385,7 @@ if view_option == "Demographic Groups":
     cols_dem = st.columns([1, 1])
     with cols_dem[0]:
         st.subheader("Demographic Groups Distribution (stacked by Vital Status)")
+        st.markdown(filter_summary)
 
         # Prepare a DataFrame with counts of Living vs Deceased for each demographic group
         records = []
@@ -408,6 +426,7 @@ if view_option == "Demographic Groups":
     # cols_dem[1] remains empty, keeping the chart narrow & left-aligned
 else:
     st.subheader("Vital Status Distribution")
+    st.markdown(filter_summary)
     stat_df = pd.DataFrame(list(stat_counts.items()), columns=["Status","Count"])
     chart_stat = alt.Chart(stat_df).mark_bar().encode(
         x=alt.X("Count:Q", title="Count"),
@@ -418,6 +437,7 @@ else:
 
 # ——— Main UI ———
 st.header("Music Performance Dashboard")
+st.markdown(filter_summary)
 
 # Summary metrics
 col1, col2, col3 = st.columns(3)
