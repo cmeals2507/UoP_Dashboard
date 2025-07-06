@@ -140,9 +140,15 @@ else:
     st.sidebar.warning("Column not found: 'Semester'")
 filters['Semester'] = sem_selected
 
+ # Performance Type filter as checkboxes
+pt_selected = []
 if col_perf_type:
-    opts = sorted(df[col_perf_type].dropna().unique())
-    filters['Performance Type'] = st.sidebar.multiselect("Performance Type", opts, default=opts)
+    opts_pt = sorted(df[col_perf_type].dropna().unique())
+    st.sidebar.subheader("Performance Type")
+    for opt in opts_pt:
+        if st.sidebar.checkbox(opt, key=f"PT_{opt}"):
+            pt_selected.append(opt)
+    filters['Performance Type'] = pt_selected
 else:
     st.sidebar.warning("Column not found: 'Performance Type'")
 
