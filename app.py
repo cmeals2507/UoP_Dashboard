@@ -392,7 +392,7 @@ if view_option == "Demographic Groups":
     cols_dem = st.columns([1, 1])
     with cols_dem[0]:
         st.subheader("Demographic Groups Distribution (stacked by Vital Status)")
-        st.markdown(filter_summary)
+        st.markdown(filter_summary, unsafe_allow_html=True)
 
         # Prepare a DataFrame with counts of Living vs Deceased for each demographic group
         records = []
@@ -433,7 +433,7 @@ if view_option == "Demographic Groups":
     # cols_dem[1] remains empty, keeping the chart narrow & left-aligned
 else:
     st.subheader("Vital Status Distribution")
-    st.markdown(filter_summary)
+    st.markdown(filter_summary, unsafe_allow_html=True)
     stat_df = pd.DataFrame(list(stat_counts.items()), columns=["Status","Count"])
     chart_stat = alt.Chart(stat_df).mark_bar().encode(
         x=alt.X("Count:Q", title="Count"),
