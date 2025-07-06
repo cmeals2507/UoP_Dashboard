@@ -95,18 +95,50 @@ col_comp_status = detect_column(['composer status'])
 # ——— Sidebar Logo ———
 st.sidebar.image("UoP_Logo.svg", use_container_width=True)
 
+# Function to clear selected filters (Academic Year, Semester, and Performance Type)
+def clear_all_filters():
+    for key in list(st.session_state.keys()):
+        # Uncheck all Academic Year and Semester checkboxes
+        if key.startswith("AY_") or key.startswith("Sem_"):
+            st.session_state[key] = False
+        # Clear Performance Type multiselect
+        if key == "Performance Type":
+            st.session_state[key] = []
+# Add a Clear All button in the sidebar
+st.sidebar.button("Clear All Filters", on_click=clear_all_filters)
+
 filters = {}
+# Academic Year filter as checkboxes
+ay_selected = []
 if col_academic_year:
-    opts = sorted(df[col_academic_year].dropna().unique())
-    filters['Academic Year'] = st.sidebar.multiselect("Academic Year", opts, default=opts)
+    opts_ay = sorted(df[col_academic_year].dropna().unique())
+    # disable if any semester is selected
+    sem_opts = sorted(df[col_semester].dropna().unique()) if col_semester else []
+    sem_selected = [s for s in sem_opts if st.session_state.get(f"Sem_{s}", False)]
+    disabled_ay = bool(sem_selected)
+    st.sidebar.subheader("Academic Year")
+    for opt in opts_ay:
+        if st.sidebar.checkbox(opt, key=f"AY_{opt}", disabled=disabled_ay):
+            ay_selected.append(opt)
 else:
     st.sidebar.warning("Column not found: 'Academic Year'")
+filters['Academic Year'] = ay_selected
 
+# Semester filter as checkboxes
+sem_selected = []
 if col_semester:
-    opts = sorted(df[col_semester].dropna().unique())
-    filters['Semester'] = st.sidebar.multiselect("Semester", opts, default=opts)
+    opts_sem = sorted(df[col_semester].dropna().unique())
+    # disable if any academic year is selected
+    ay_opts = sorted(df[col_academic_year].dropna().unique()) if col_academic_year else []
+    ay_selected = [a for a in ay_opts if st.session_state.get(f"AY_{a}", False)]
+    disabled_sem = bool(ay_selected)
+    st.sidebar.subheader("Semester")
+    for opt in opts_sem:
+        if st.sidebar.checkbox(opt, key=f"Sem_{opt}", disabled=disabled_sem):
+            sem_selected.append(opt)
 else:
     st.sidebar.warning("Column not found: 'Semester'")
+filters['Semester'] = sem_selected
 
 if col_perf_type:
     opts = sorted(df[col_perf_type].dropna().unique())
